@@ -17,7 +17,7 @@ int main(int argc, char **argv)
 		// fgets read at most one less than size characters
 		// if on error or end of file
 		if (fgets(line, sizeof(line), stdin) == NULL) {
-			break;
+			exit(0);
 		}
 
 		// line is empty
@@ -47,4 +47,5 @@ int main(int argc, char **argv)
 			}
 		}
 	}
+	return 0;
 }

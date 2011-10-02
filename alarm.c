@@ -12,8 +12,8 @@ int main(int argc, char **argv)
 		printf("Alarm>\n");
 		// fgets read at most one less than size characters
 		// if on error or end of file
-		if (fgets(line, 128, stdin) == NULL) {
-			break;
+		if (fgets(line, sizeof(line), stdin) == NULL) {
+			exit(0);
 		}
 
 		// line is empty
@@ -29,4 +29,5 @@ int main(int argc, char **argv)
 			printf("(%d) %s\n", seconds, message);
 		}
 	}
+	return 0;
 }
