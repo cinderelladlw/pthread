@@ -1,8 +1,9 @@
 CC=gcc
-CFLAGS=-g -Wall -std=c99
+CFLAGS=-g -Wall -std=c99 -DDEBUG
 LDFLAGS=-lpthread
 
-SOURCES=alarm.c	alarm_fork.c	alarm_thread.c
+SOURCES=alarm.c	alarm_fork.c	alarm_thread.c\
+	alarm_mutex.c
 PROGRAMS=$(SOURCES:.c=)
 
 all:	${PROGRAMS}
