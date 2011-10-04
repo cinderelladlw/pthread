@@ -19,6 +19,12 @@ alarm_t *alarm_list = NULL;
 /* optimization for signal, only list is empty or insert a new earlier alarm */
 time_t current_time = 0;
 
+/* main thread set alarm done flag when exit
+ * alarm thread should exit when alarm list is empty and alarm done flag is set */
+int alarm_done = 0;
+
+
+
 /* insert alarm in list in order, caller MUST have alarm_metux locked */
 void insert_alarm(alarm_t *alarm)
 {
@@ -77,6 +83,13 @@ void *alarm_thread(void *arg)
 
 		current_time = 0;
 		while (alarm_list == NULL) {
+			if (alarm_done) {
+				status = pthread_mutex_unlock(&alarm_mutex);
+				if (status != 0) {
+					err_abort(status, "Unlock mutex");
+				}
+				pthread_exit(0);
+			}
 			//DPRINTF(("wait on empty list\n"));
 			status = pthread_cond_wait(&alarm_cond, &alarm_mutex);
 			if (status != 0) {
@@ -147,7 +160,23 @@ int main()
 		printf("Alarm>\n");
 
 		if (fgets(line, sizeof(line), stdin) == NULL) {
-			exit(0);
+			status = pthread_mutex_lock(&alarm_mutex);
+			if (status != 0) {
+				err_abort(status, "Lock alarm mutex");
+			}
+
+			alarm_done = 1;
+
+			status = pthread_cond_signal(&alarm_cond);
+			if (status != 0) {
+				err_abort(status, "Unlock alarm mutex");
+			}
+
+			status = pthread_mutex_unlock(&alarm_mutex);
+			if (status != 0) {
+				err_abort(status, "Unlock alarm mutex");
+			}
+			pthread_exit(0);
 		}
 
 		if (strlen(line) < 1) {
