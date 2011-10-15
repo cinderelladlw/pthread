@@ -5,17 +5,15 @@ LDFLAGS=-lpthread
 SOURCES=alarm.c	alarm_fork.c	alarm_thread.c\
 	thread_exit.c	lifecycle.c	alarm_mutex.c\
 	trylock.c	backoff.c	cond.c	alarm_cond.c\
-	pipe.c		crew.c
+	pipe.c		crew.c	server.c
 
 PROGRAMS=$(SOURCES:.c=)
 
 all:	${PROGRAMS}
 
-%.o : %c
-	$(CC) $(CFLAGS) $< -o $@
+% : %.c
+	$(CC) $(CFLAGS) $< -o $@ $(LDFLAGS)
 
-% : %.o
-	$(CC) $(CFLAGS) $< $(LDFLAGS) -o $@
 clean:
 	@rm -rf $(PROGRAMS) *.o
 recompile:	clean all
